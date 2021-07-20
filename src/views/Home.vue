@@ -1,27 +1,27 @@
 <template>
-<div class="content-container">
-  <template-list :list="testData"></template-list>
-</div>
+  <div class="content-container">
+    <template-list :list="testData"></template-list>
+  </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
-import { GlobalDataProps } from '../store/index'
-import TemplateList from '../components/TemplateList.vue'
+import { computed, defineComponent } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { GlobalDataProps } from "../store/index";
+import TemplateList from "../components/TemplateList.vue";
 export default defineComponent({
   components: {
-    TemplateList
+    TemplateList,
   },
   setup() {
-    const store = useStore<GlobalDataProps>()
-    const testData = computed(() => store.state.templates.data)
+    const store = useStore<GlobalDataProps>();
+    const testData = computed(() => store.state.templates.data);
     return {
-      testData
-    }
-  }
-})
+      testData,
+    };
+  },
+});
 </script>
 
 <style>
