@@ -9,7 +9,7 @@ export interface GlobalDataProps {
   // editor: EditorProps;
 }
 
-const store = createStore({
+const store = createStore<GlobalDataProps>({
   modules: {
     user,
     templates,
