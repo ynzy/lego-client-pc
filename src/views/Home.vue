@@ -1,41 +1,22 @@
 <template>
-  <div class="homepage-container">
-    <a-layout :style="{background: '#fff'}">
-      <a-layout-header class="header">
-        <div class="page-title">
-          <router-link to="/">慕课乐高</router-link>
-        </div>
-        <user-profile :user="user"></user-profile>
-      </a-layout-header>
-      <a-layout-content class="home-layout">
-        <!-- <router-view></router-view> -->
-        <TemplateList :list="testData"/>
-      </a-layout-content>
-    </a-layout>
-    <a-layout-footer>
-      © 慕课网（imooc.com）版权所有 | 津ICP备20000929号-2
-    </a-layout-footer>
-  </div>
+<div class="content-container">
+  <template-list :list="testData"></template-list>
+</div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { GlobalDataProps } from '@/store/index'
-
-// import UserProfile from '../components/UserProfile.vue'
-import TemplateList from '@/components/TemplateList.vue'
+import { GlobalDataProps } from '../store/index'
+import TemplateList from '../components/TemplateList.vue'
 export default defineComponent({
-  name: 'Index',
   components: {
-    // UserProfile,
     TemplateList
   },
-  setup () {
-     const store = useStore<GlobalDataProps>()
+  setup() {
+    const store = useStore<GlobalDataProps>()
     const testData = computed(() => store.state.templates.data)
-    console.log(testData.value);
-    
     return {
       testData
     }
@@ -44,12 +25,15 @@ export default defineComponent({
 </script>
 
 <style>
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 .page-title {
   color: #fff;
+}
+.content-container {
+  background: #fff;
+  padding: 0 24px 24px 30px;
+  min-height: 85vh;
+  max-width: 1200px;
+  margin: 50px auto;
+  width: 100%;
 }
 </style>

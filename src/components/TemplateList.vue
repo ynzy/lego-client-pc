@@ -28,12 +28,12 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-// import { TemplateProps } from '../store/templates'
+import { TemplateProps } from '@/store/templates'
 export default defineComponent({
   name: 'template-list',
   props: {
     list: {
-      type: Array,
+      type: Array as PropType<TemplateProps[]>,
       required: true
     }
   }
