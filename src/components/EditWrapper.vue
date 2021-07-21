@@ -20,7 +20,7 @@ export default defineComponent({
   emits: ['set-active'],
   setup(props, context) {
     const onItemClick = (id: string) => {
-      context.emit('set-active', id)
+      context.emit('set-active', id);
     }
     return {
       onItemClick
