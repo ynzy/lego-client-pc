@@ -1,21 +1,21 @@
 <template>
-  <div class="template-list-component">
-    <a-row :gutter="16">
-      <a-col :span="6" v-for="item in list" :key="item.id" class="poster-item">
-        <router-link :to="{ name: 'template', params: { id: item.id }}">
+  <div class='template-list-component'>
+    <a-row :gutter='16'>
+      <a-col :span='6' v-for='item in list' :key='item.id' class='poster-item'>
+        <router-link :to='{ name: &apos;template&apos;, params: { id: item.id }}'>
           <a-card hoverable>
             <template v-slot:cover>
-              <img :src="item.coverImg"  v-if="item.coverImg" />
-              <img src="http://typescript-vue.oss-cn-beijing.aliyuncs.com/vue-marker/5f81cca3f3bf7a0e1ebaf885.png"  v-else />
-              <div class="hover-item">
-                <a-button size="large" type="primary">使用该模版创建</a-button>
+              <img :src='item.coverImg'  v-if='item.coverImg' />
+              <img src='http://typescript-vue.oss-cn-beijing.aliyuncs.com/vue-marker/5f81cca3f3bf7a0e1ebaf885.png'  v-else />
+              <div class='hover-item'>
+                <a-button size='large' type='primary'>使用该模版创建</a-button>
               </div>
             </template>
-            <a-card-meta :title="item.title">
+            <a-card-meta :title='item.title'>
               <template v-slot:description>
-                <div class="description-detail">
+                <div class='description-detail'>
                   <span>作者：{{item.author}}</span>
-                  <span class="user-number">{{item.copiedCount}}</span>
+                  <span class='user-number'>{{item.copiedCount}}</span>
                 </div>
               </template>
             </a-card-meta>

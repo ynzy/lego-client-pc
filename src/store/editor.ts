@@ -70,6 +70,11 @@ const editor: Module<EditorProps, GlobalDataProps> = {
     addComponent(state, component: ComponentData) {
       state.components.push(component);
     },
+    deleteComponent(state, component: ComponentData) {
+      state.components = state.components.filter(
+        (item) => item.id !== component.id
+      );
+    },
   },
 };
 

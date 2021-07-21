@@ -1,29 +1,30 @@
 <!--  -->
 <template>
-  <div class='editor-container' id='editor-layout-main'>
+  <div class="editor-container" id="editor-layout-main">
     <a-layout>
-      <a-layout-sider width='300' style='background: #fff'>
-        <div class='sidebar-container'>
-          <ComponentsList :list='defaultTextTemplates' @onItemClick='addItem'/>
+      <a-layout-sider width="300" style="background: #fff">
+        <div class="sidebar-container">
+          <ComponentsList :list="defaultTextTemplates" @onItemClick="addItem"/>
         </div>
       </a-layout-sider>
-      <a-layout style='padding: 0 24px 24px'>
-        <a-layout-content class='preview-container'>
+      <a-layout style="padding: 0 24px 24px">
+        <a-layout-content class="preview-container">
           <p>画布区域</p>
-          <div class='preview-list' id='canvas-area'>
+          <div class="preview-list" id="canvas-area">
             <component
-              v-for='component in components'
-              :key='component.id'
-              :is='component.name'
-              v-bind='component.props'
-            />
+              v-for="component in components"
+              :key="component.id"
+              :is="component.name"
+              v-bind="component.props"
+            >
+            </component>
           </div>
         </a-layout-content>
       </a-layout>
       <a-layout-sider
-        width='300'
-        style='background: #fff'
-        class='settings-panel'
+        width="300"
+        style="background: #fff"
+        class="settings-panel"
       >
         组件属性
       </a-layout-sider>
@@ -36,6 +37,7 @@ import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 import { ComponentData } from "@/store/editor";
 import LText from "@/components/LText.vue";
+import EditWrapper from "@/components/EditWrapper.vue";
 import ComponentsList from "@/components/ComponentsList.vue";
 
 import { defaultTextTemplates } from "@/defaultTemplates";
@@ -45,6 +47,7 @@ export default defineComponent({
   components: {
     LText,
     ComponentsList,
+    EditWrapper
   },
   props: {},
   setup() {
@@ -53,10 +56,14 @@ export default defineComponent({
     const addItem = (props:TextComponentProps) =>{
       store.commit('addComponent', props)
     }
+    const handleDeleteComponent = (component:ComponentData) =>{
+      store.commit('deleteComponent', component)
+    }
     return {
       components,
       defaultTextTemplates,
-      addItem
+      addItem,
+      handleDeleteComponent
     };
   },
 });
