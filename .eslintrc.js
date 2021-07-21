@@ -15,8 +15,8 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'vue/html-indent': ['warn', 2],
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/ban-types": ['warn', 2]
+    'vue/html-quotes': ['warn', 'single'],
+    "@typescript-eslint/explicit-module-boundary-types": "off"
   },
   overrides: [
     {

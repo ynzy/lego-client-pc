@@ -65,6 +65,19 @@ const editor: Module<EditorProps, GlobalDataProps> = {
     components: testComponents,
     currentElement: "",
   },
+  mutations: {
+    // 添加組件
+    addComponent(state, props) {
+      const newComponent: ComponentData = {
+        id: uuidv4(),
+        name: "l-text",
+        props,
+      };
+      console.log(newComponent);
+
+      state.components.push(newComponent);
+    },
+  },
 };
 
 export default editor;
