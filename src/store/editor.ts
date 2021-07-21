@@ -70,9 +70,22 @@ const editor: Module<EditorProps, GlobalDataProps> = {
     addComponent(state, component: ComponentData) {
       state.components.push(component);
     },
+    // 删除组件
     deleteComponent(state, component: ComponentData) {
       state.components = state.components.filter(
         (item) => item.id !== component.id
+      );
+    },
+    // 画布选中组件的id
+    setActive(state, currentId: string) {
+      state.currentElement = currentId;
+    },
+  },
+  getters: {
+    // 获取当前选中的组件属性
+    getCurrentElement: (state) => {
+      return state.components.find(
+        (component) => component.id === state.currentElement
       );
     },
   },

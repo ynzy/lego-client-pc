@@ -11,13 +11,18 @@
         <a-layout-content class="preview-container">
           <p>画布区域</p>
           <div class="preview-list" id="canvas-area">
-            <component
-              v-for="component in components"
-              :key="component.id"
-              :is="component.name"
-              v-bind="component.props"
+            <EditWrapper 
+              v-for="component in components" 
+              :key="component.id" 
+              :id="component.id" 
+              @setActive="setActive"  
+              :active="component.id === currentElement?.id"
             >
-            </component>
+              <component
+                :is="component.name"
+                v-bind="component.props"
+              />
+            </EditWrapper>
           </div>
         </a-layout-content>
       </a-layout>
@@ -27,6 +32,9 @@
         class="settings-panel"
       >
         组件属性
+        <pre>
+          {{currentElement?.props}}
+        </pre>
       </a-layout-sider>
     </a-layout>
   </div>
@@ -53,17 +61,23 @@ export default defineComponent({
   setup() {
     const store = useStore<GlobalDataProps>();
     const components = computed(() => store.state.editor.components);
+    const currentElement = computed<ComponentData | null>(() => store.getters.getCurrentElement)
     const addItem = (props:TextComponentProps) =>{
       store.commit('addComponent', props)
     }
     const handleDeleteComponent = (component:ComponentData) =>{
       store.commit('deleteComponent', component)
     }
+    const setActive = (id: string) => {
+      store.commit('setActive', id)
+    }
     return {
       components,
       defaultTextTemplates,
       addItem,
-      handleDeleteComponent
+      handleDeleteComponent,
+      setActive,
+      currentElement
     };
   },
 });
