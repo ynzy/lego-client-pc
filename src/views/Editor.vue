@@ -39,6 +39,7 @@ import LText from "@/components/LText.vue";
 import ComponentsList from "@/components/ComponentsList.vue";
 
 import { defaultTextTemplates } from "@/defaultTemplates";
+import { TextComponentProps } from "@/defaultProps";
 export default defineComponent({
   name: "",
   components: {
@@ -49,7 +50,7 @@ export default defineComponent({
   setup() {
     const store = useStore<GlobalDataProps>();
     const components = computed(() => store.state.editor.components);
-    const addItem = (props:any) =>{
+    const addItem = (props:TextComponentProps) =>{
       store.commit('addComponent', props)
     }
     return {

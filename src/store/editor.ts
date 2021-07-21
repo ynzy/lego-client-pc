@@ -1,7 +1,7 @@
 import { Module } from "vuex";
 import { GlobalDataProps } from "./index";
 import { v4 as uuidv4 } from "uuid";
-
+import { TextComponentProps, ImageComponentProps } from "@/defaultProps";
 export interface EditorProps {
   // 供中间编辑器渲染的数组
   components: ComponentData[];
@@ -13,7 +13,7 @@ export interface ComponentData {
   // 每个元素 props 所有属性
   // 我们上节课已经分析过了，是 css 属性和其他属性的混合体
   // 并且我们会把这些属性完全平铺开来，其实在编辑器分析过后，你就能更感受到平铺的一个好处
-  props: { [key: string]: any };
+  props: Partial<TextComponentProps & ImageComponentProps>;
   // id，uuid v4 生成
   id: string;
   // 业务组件库名称 l-text，l-image 等等
@@ -67,15 +67,8 @@ const editor: Module<EditorProps, GlobalDataProps> = {
   },
   mutations: {
     // 添加組件
-    addComponent(state, props) {
-      const newComponent: ComponentData = {
-        id: uuidv4(),
-        name: "l-text",
-        props,
-      };
-      console.log(newComponent);
-
-      state.components.push(newComponent);
+    addComponent(state, component: ComponentData) {
+      state.components.push(component);
     },
   },
 };

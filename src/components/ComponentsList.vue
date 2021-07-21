@@ -12,8 +12,11 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
+import { v4 as uuidv4 } from 'uuid'
 import LText from "@/components/LText.vue";
+import { TextComponentProps } from "@/defaultProps";
+import { ComponentData } from "@/store/editor";
 
 export default defineComponent({
   name: "components-list",
@@ -22,14 +25,19 @@ export default defineComponent({
   },
   props: {
     list: {
-      type: Array,
+      type: Array as PropType<ComponentData[]>,
       required: true,
     },
   },
   emits: ["on-item-click"],
   setup(props, context) {
-    const onItemClick = (data: any) => {
-      context.emit("on-item-click", data);
+    const onItemClick = (props: TextComponentProps) => {
+      const newComponent: ComponentData = {
+        id: uuidv4(),
+        name: "l-text",
+        props,
+      };
+      context.emit("on-item-click", newComponent);
     };
     return {
       onItemClick,
