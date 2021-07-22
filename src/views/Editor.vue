@@ -32,6 +32,11 @@
         class="settings-panel"
       >
         组件属性
+        <PropsTable
+          v-if="currentElement?.props"
+          :props="currentElement.props"
+          @change="handleChange"
+        ></PropsTable>
         <pre>
           {{currentElement?.props}}
         </pre>
@@ -47,6 +52,8 @@ import { ComponentData } from "@/store/editor";
 import LText from "@/components/LText.vue";
 import EditWrapper from "@/components/EditWrapper.vue";
 import ComponentsList from "@/components/ComponentsList.vue";
+// import PropsTable from "@/components/PropsTable.vue";
+import PropsTable from "@/components/PropsTable.tsx";
 
 import { defaultTextTemplates } from "@/defaultTemplates";
 import { TextComponentProps } from "@/defaultProps";
@@ -55,7 +62,8 @@ export default defineComponent({
   components: {
     LText,
     ComponentsList,
-    EditWrapper
+    EditWrapper,
+    PropsTable
   },
   props: {},
   setup() {
@@ -71,13 +79,19 @@ export default defineComponent({
     const setActive = (id: string) => {
       store.commit('setActive', id)
     }
+    const handleChange = (e:any) =>{
+      console.log('event', e);
+      store.commit('updateComponent', e)
+      
+    }
     return {
       components,
       defaultTextTemplates,
       addItem,
       handleDeleteComponent,
       setActive,
-      currentElement
+      currentElement,
+      handleChange
     };
   },
 });
