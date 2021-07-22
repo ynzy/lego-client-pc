@@ -52,8 +52,8 @@ import { ComponentData } from "@/store/editor";
 import LText from "@/components/LText.vue";
 import EditWrapper from "@/components/EditWrapper.vue";
 import ComponentsList from "@/components/ComponentsList.vue";
-// import PropsTable from "@/components/PropsTable.vue";
-import PropsTable from "@/components/PropsTable.tsx";
+import PropsTable from "@/components/PropsTable.vue";
+// import PropsTable from "@/components/PropsTable.tsx";
 
 import { defaultTextTemplates } from "@/defaultTemplates";
 import { TextComponentProps } from "@/defaultProps";

@@ -98,17 +98,3 @@ export default defineComponent({
     )
   },
 });
-
-{/* <style lang="scss" scoped>
-.prop-item {
-  display: flex;
-  margin-bottom: 10px;
-  align-items: center;
-}
-.label {
-  width: 28%;
-}
-.prop-component {
-  width: 70%;
-}
-</style> */}
