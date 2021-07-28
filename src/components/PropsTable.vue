@@ -38,6 +38,7 @@ import { reduce } from "lodash";
 import { TextComponentProps } from "@/defaultProps";
 import { mapPropsToForms, PropsToForms } from "@/propsMap";
 import RenderVnode from '@/components/RenderVnode';
+import ColorPicker from '@/components/ColorPicker.vue'; 
 interface FormProps {
   component: string;
   subComponent?: string;
@@ -52,7 +53,8 @@ interface FormProps {
 export default defineComponent({
   name: "props-table",
   components: {
-    RenderVnode
+    RenderVnode,
+    ColorPicker
   },
   props: {
     props: {
