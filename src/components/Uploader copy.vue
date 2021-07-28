@@ -11,16 +11,6 @@
       :style="{ display: 'none' }" 
       @change="handleFileChange"
     />
-    <ul>
-      <li 
-        :class="`uploaded-file upload-${file.status}`"
-        v-for="file in uploadedFiles"
-        :key="file.uid"
-      >
-        <span class="filename">{{file.name}}</span>
-        <button class="delete-icon" @click="removeFile(file.uid)">Del</button>
-      </li>
-    </ul>
   </div>
 </template>
 <script lang="ts">
@@ -43,6 +33,7 @@ export default defineComponent({
     action: {
       type: String,
       required: true,
+      default: "http://local.test:7001/api/upload",
     },
   },
   setup(props, { emit }) {
@@ -51,9 +42,6 @@ export default defineComponent({
     const isUploading = computed(()=>{
       return uploadedFiles.value.some(file=>file.status ==='loading')
     })
-    const removeFile = (id: string) => {
-      uploadedFiles.value = uploadedFiles.value.filter(file => file.uid !== id);
-    }
     // 获取到input dom， 通过点击button，模拟点击input
     const triggerUpload = () => {
       if (fileInput.value) {
@@ -83,16 +71,11 @@ export default defineComponent({
             },
           })
           .then((res) => {
-              // console.log(res.data);
+            console.log(res.data);
               fileObj.status = 'success'
           })
           .catch(() => {
               fileObj.status = 'error'
-          }).finally(() =>{
-            // 如果value没有改变，上传相同的图片不会触发change事件
-            if(fileInput.value) {
-              fileInput.value.value = ''
-            }
           });
       }
     };
@@ -101,21 +84,9 @@ export default defineComponent({
       triggerUpload,
       handleFileChange,
       uploadedFiles,
-      isUploading,
-      removeFile
+      isUploading
     };
   },
 });
 </script>
-<style lang="scss" scoped>
-.upload-loading {
-  color: yellow;
-}
-.upload-success {
-  color: green;
-}
-.upload-error {
-  color: red;
-}
-
-</style>
+<style lang="scss" scoped></style>

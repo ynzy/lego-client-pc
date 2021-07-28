@@ -63,6 +63,37 @@ describe("HelloWorld.vue", () => {
     expect(wrapper.find(".loading").exists()).toBeFalsy(); // 判断 .loading 元素是否存在(隐藏loading)
     expect(wrapper.find(".error").exists()).toBeTruthy();
   });
+  const setInputValue = (
+    input: HTMLInputElement,
+    file = new File(["xyz"], "test.png", { type: "image/png" })
+  ) => {
+    const files = [file] as any; // 由于没有FileList构造函数，只能通过断言来创建一个数组
+    // 虽然通过了Ts的类型校验，但是通过不了测试，所以用Object.defineProperty来修改属性
+    Object.defineProperty(input, "files", {
+      value: files,
+      writable: false,
+    });
+  };
+  it.only("should load success when return promise resolve", async () => {
+    // 模拟接口，获取一次成功态，返回数据
+    mockAxios.post.mockResolvedValueOnce({
+      data: {
+        userName: "viking",
+      },
+    });
+    const fileInput = wrapper.get(".upload").element as HTMLInputElement;
+    setInputValue(fileInput);
+    await wrapper.get(".upload").trigger("change");
+    expect(mockAxios.post).toHaveBeenCalledTimes(1);
+    // expect(wrapper.find(".loading").exists()).toBeTruthy();
+    // expect(wrapper.find(".status-loading").exists()).toBeTruthy();
+    // expect(wrapper.get(".status").text()).toBe("正在上传");
+    await flushPromises();
+    // expect(wrapper.get(".status").text()).toBe("上传成功");
+    // expect(wrapper.find(".status-success").exists()).toBeTruthy();
+    // expect(wrapper.find(".loading").exists()).toBeFalsy();
+    // expect(wrapper.get(".userName").text()).toBe("viking");
+  });
 
   afterEach(() => {
     mockAxios.get.mockReset();

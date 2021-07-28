@@ -12,11 +12,17 @@
   <div v-else class="userName" >{{user.data?.userName}}</div>
   <p v-if="user.error" class="error">error!</p>
   <Hello msg="1234" />
+  <input class="upload" type="file" @change="upload">
+  <span class="status status-loading" v-if="loadStatus==='loading'">正在上传</span>
+  <span class="status status-success" v-else-if="loadStatus==='success'">上传成功</span>
+  <span class="status" v-else>上传失败</span>
 </template>
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
 import axios from 'axios';
 import Hello from "./Hello.vue";
+type UploadStatus = "ready" | "loading" | "success" | "error";
+
 export default defineComponent({
   name: "",
   components: {
@@ -35,6 +41,7 @@ export default defineComponent({
       loading: false,
       error: false,
     })
+    const loadStatus = ref<UploadStatus>('ready')
     const setCount = () => {
       count.value++
     }
@@ -55,6 +62,16 @@ export default defineComponent({
         user.loading = false
       }) 
     }
+    const upload = () => {
+      loadStatus.value = 'loading'
+      axios.post('https:/ljsonplaceholder.typicode.com/users/1').then(res=>{
+        console.log(res);
+        loadStatus.value = 'success'
+
+      }).catch(() => {
+        loadStatus.value = 'error'
+      })
+    }
     return {
       count,
       todo,
@@ -62,7 +79,9 @@ export default defineComponent({
       setCount,
       addTodo,
       user,
-      loadUser
+      loadUser,
+      upload,
+      loadStatus
     };
   },
 });
