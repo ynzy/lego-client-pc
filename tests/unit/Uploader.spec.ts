@@ -196,7 +196,27 @@ describe("Uploader Component", () => {
     await flushPromises();
     expect(wrapper.findAll("li").length).toBe(1);
   });
-  it("testing manual upload process", async () => {});
+  it("testing manual upload process", async () => {
+    mockedAxios.post.mockResolvedValueOnce({ data: { url: "dummy.url" } });
+    const wrapper = shallowMount(Uploader, {
+      props: {
+        action: "test.url",
+        drag: true,
+        autoUpload: false,
+      },
+    });
+    const fileInput = wrapper.get("input").element as HTMLInputElement;
+    setInputValue(fileInput);
+    await wrapper.get("input").trigger("change");
+    expect(wrapper.findAll("li").length).toBe(1);
+    const firstItem = wrapper.get("li:first-child");
+    expect(firstItem.classes()).toContain("upload-ready");
+    wrapper.vm.uploadFiles(); // 拿到vm实例调用方法
+    expect(mockedAxios.post).toHaveBeenCalled();
+    // expect(firstItem.classes()).toContain("upload-loading");
+    await flushPromises();
+    expect(firstItem.classes()).toContain("upload-success");
+  });
   it("PictureList mode should works fine", async () => {});
   afterEach(() => {
     mockedAxios.post.mockReset();
