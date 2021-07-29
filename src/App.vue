@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <Uploader action="http://127.0.0.1:5000/upload/img" drag>
+    <!-- <Uploader action="http://127.0.0.1:5000/upload/img" drag listType="picture">
       <div class="uploader-container">
         <h4>上传图片</h4>
       </div>
@@ -15,19 +15,19 @@
           <h3>点击重新上传</h3>
         </div>
       </template>
-    </Uploader>
+    </Uploader> -->
     <!-- <demo/> -->
     <router-view/>
   </div>
 </template>
 <script>
 import { defineComponent } from 'vue'
-import Uploader from '@/components/Uploader.vue';
+// import Uploader from '@/components/Uploader.vue';
 // import demo from './demo.tsx';
 export default defineComponent({
   components: {
     // demo,
-    Uploader
+    // Uploader
   },
 })
 </script>

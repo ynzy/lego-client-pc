@@ -21,12 +21,18 @@
       :style="{ display: 'none' }" 
       @change="handleFileChange"
     />
-    <ul>
+    <ul :class="`upload-list upload-list-${listType}`"  v-if="showUploadList">
       <li 
         :class="`uploaded-file upload-${file.status}`"
         v-for="file in filesList"
         :key="file.uid"
       >
+        <img 
+          v-if="file.url && listType === 'picture'"
+          class="upload-list-thumbnail"
+          :src="file.url" 
+          :alt="file.name"
+        >
         <span v-if="file.status === 'loading'" class="file-icon"><LoadingOutlined/></span>
         <span v-else class="file-icon"><FileOutlined/></span>
         <span class="filename">{{file.name}}</span>
@@ -43,6 +49,7 @@ import { DeleteOutlined, LoadingOutlined, FileOutlined } from '@ant-design/icons
 import { last } from "lodash";
 
 type UploadStatus = "ready" | "loading" | "success" | "error";
+type FileListType = 'picture' | 'text'
 type CheckUpload = (file: File) => boolean | Promise<File>
 export interface UploadFile {
   uid: string;
@@ -73,6 +80,14 @@ export default defineComponent({
       default: false
     },
     autoUpload: {
+      type: Boolean,
+      default: true
+    },
+    listType: {
+      type: String as PropType<FileListType>,
+      default: "text"
+    },
+    showUploadList: {
       type: Boolean,
       default: true
     }
@@ -133,6 +148,18 @@ export default defineComponent({
         status: 'ready',
         raw: uploadedFile
       }) 
+      if(props.listType === 'picture') {
+        try {
+          fileObj.url = URL.createObjectURL(uploadedFile)
+        } catch (err) {
+          console.error('upload File error', err);
+        }
+        // const fileReader = new FileReader();
+        // fileReader.readAsDataURL(uploadedFile);
+        // fileReader.addEventListener('load', () => {
+        //   fileObj.url = fileReader.result as string;
+        // })
+      }
       filesList.value.push(fileObj);
       if(props.autoUpload) {
         postFile(fileObj)
@@ -213,27 +240,27 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
-.file-upload .upload-area {
-  background: #efefef;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  padding: 20px;
-  width: 360px;
-  height: 180px;
-  text-align: center;
-  &:hover {
-    border: 1px solid #1890ff;
-  }
-  &.is-dragover {
-    border: 2px solid #1890ff;
-    background: rgba(#1890ff,.2)
-  } 
-  img { 
-    width:100%;
-    height:100%;
-  }
-}
+// .file-upload .upload-area {
+//   background: #efefef;
+//   border: 1px solid #ccc;
+//   border-radius: 4px;
+//   cursor: pointer;
+//   padding: 20px;
+//   width: 360px;
+//   height: 180px;
+//   text-align: center;
+//   &:hover {
+//     border: 1px solid #1890ff;
+//   }
+//   &.is-dragover {
+//     border: 2px solid #1890ff;
+//     background: rgba(#1890ff,.2)
+//   } 
+//   img { 
+//     width:100%;
+//     height:100%;
+//   }
+// }
 .upload-list {
   margin: 0;
   padding: 0;

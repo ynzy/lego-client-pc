@@ -50,17 +50,18 @@ import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 import { ComponentData } from "@/store/editor";
 import LText from "@/components/LText.vue";
+import LImage from "@/components/LImage.vue";
 import EditWrapper from "@/components/EditWrapper.vue";
 import ComponentsList from "@/components/ComponentsList.vue";
 import PropsTable from "@/components/PropsTable.vue";
 // import PropsTable from "@/components/PropsTable.tsx";
 
 import { defaultTextTemplates } from "@/defaultTemplates";
-import { TextComponentProps } from "@/defaultProps";
 export default defineComponent({
   name: "",
   components: {
     LText,
+    LImage,
     ComponentsList,
     EditWrapper,
     PropsTable
@@ -70,8 +71,8 @@ export default defineComponent({
     const store = useStore<GlobalDataProps>();
     const components = computed(() => store.state.editor.components);
     const currentElement = computed<ComponentData | null>(() => store.getters.getCurrentElement)
-    const addItem = (props:TextComponentProps) =>{
-      store.commit('addComponent', props)
+    const addItem = (component: ComponentData) =>{
+      store.commit('addComponent', component)
     }
     const handleDeleteComponent = (component:ComponentData) =>{
       store.commit('deleteComponent', component)

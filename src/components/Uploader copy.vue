@@ -1,7 +1,10 @@
 <!--  -->
 <template>
   <div class="file-upload">
-    <div class="upload-area" @click="triggerUpload">
+    <div class="upload-area" 
+         :class="{'is-dragover': drag && isDragOver}"
+         v-on="events"
+    >
       <slot v-if="isUploading" name="loading">
         <button disabled>正在上传</button>
       </slot>
@@ -18,12 +21,18 @@
       :style="{ display: 'none' }" 
       @change="handleFileChange"
     />
-    <ul>
+    <ul :class="`upload-list upload-list-${listType}`">
       <li 
         :class="`uploaded-file upload-${file.status}`"
-        v-for="file in uploadedFiles"
+        v-for="file in filesList"
         :key="file.uid"
       >
+        <img 
+          v-if="file.url && listType === 'picture'"
+          class="upload-list-thumbnail"
+          :src="file.url" 
+          :alt="file.name"
+        >
         <span v-if="file.status === 'loading'" class="file-icon"><LoadingOutlined/></span>
         <span v-else class="file-icon"><FileOutlined/></span>
         <span class="filename">{{file.name}}</span>
@@ -40,6 +49,7 @@ import { DeleteOutlined, LoadingOutlined, FileOutlined } from '@ant-design/icons
 import { last } from "lodash";
 
 type UploadStatus = "ready" | "loading" | "success" | "error";
+type FileListType = 'picture' | 'text'
 type CheckUpload = (file: File) => boolean | Promise<File>
 export interface UploadFile {
   uid: string;
@@ -64,16 +74,29 @@ export default defineComponent({
     },
     beforeUpload: {
       type: Function as PropType<CheckUpload>
+    },
+    drag: {
+      type: Boolean,
+      default: false
+    },
+    autoUpload: {
+      type: Boolean,
+      default: true
+    },
+    listType: {
+      type: String as PropType<FileListType>,
+      default: "text"
     }
   },
   setup(props, { emit }) {
     const fileInput = ref<null | HTMLInputElement>(null);
-    const uploadedFiles = ref<UploadFile[]>([])
+    const filesList = ref<UploadFile[]>([])
+    const isDragOver = ref(false)
     const isUploading = computed(()=>{
-      return uploadedFiles.value.some(file=>file.status ==='loading')
+      return filesList.value.some(file=>file.status ==='loading')
     })
     const lastFileData = computed(() => {
-      const lastFile = last(uploadedFiles.value);
+      const lastFile = last(filesList.value);
       if (lastFile) {
         return {
           loaded: lastFile.status === 'success',
@@ -83,7 +106,7 @@ export default defineComponent({
       return false
     })
     const removeFile = (id: string) => {
-      uploadedFiles.value = uploadedFiles.value.filter(file => file.uid !== id);
+      filesList.value = filesList.value.filter(file => file.uid !== id);
     }
     // 获取到input dom， 通过点击button，模拟点击input
     const triggerUpload = () => {
@@ -91,41 +114,54 @@ export default defineComponent({
         fileInput.value.click();
       }
     };
-    const postFile = (uploadedFile: File) => {
-      const formData = new FormData();
-      // uploadedFile.name
-      formData.append('upload', uploadedFile)
-      const fileObj = reactive<UploadFile>({
-          uid: uuidv4(),
-          size: uploadedFile.size,
-          name: uploadedFile.name,
-          status: 'loading',
-          raw: uploadedFile
-        }) 
-        uploadedFiles.value.push(fileObj);
-        axios
-          .post(props.action, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-              // console.log(res.data);
-              fileObj.status = 'success';
-              fileObj.resp = res.data
-          })
-          .catch(() => {
-              fileObj.status = 'error'
-          }).finally(() =>{
-            // 如果value没有改变，上传相同的图片不会触发change事件
-            if(fileInput.value) {
-              fileInput.value.value = ''
-            }
-          });
+    const postFile = (readyFile: UploadFile) => {
+     const formData = new FormData()
+    //  readyFile.name
+      formData.append('upload', readyFile.raw)
+      readyFile.status = 'loading'
+      axios.post(props.action, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(resp => {
+        readyFile.status = 'success'
+        readyFile.resp = resp.data
+        emit('success', { resp: resp.data, file: readyFile, list: filesList.value })
+      }).catch((e: any) => {
+        readyFile.status = 'error'
+        emit('error', { error:e, file: readyFile, list: filesList.value })
+      }).finally(() => {
+        if (fileInput.value) {
+          fileInput.value.value = ''
+        }
+      })
     }
-    const handleFileChange = (e: Event) => {
-      const target = e.target as HTMLInputElement;
-      const files = target.files;
+    const addFileToList = (uploadedFile: File) => {
+      const fileObj = reactive<UploadFile>({
+        uid: uuidv4(),
+        size: uploadedFile.size,
+        name: uploadedFile.name,
+        status: 'ready',
+        raw: uploadedFile
+      }) 
+      if(props.listType === 'picture') {
+        try {
+          fileObj.url = URL.createObjectURL(uploadedFile)
+        } catch (err) {
+          console.error('upload File error', err);
+        }
+        // const fileReader = new FileReader();
+        // fileReader.readAsDataURL(uploadedFile);
+        // fileReader.addEventListener('load', () => {
+        //   fileObj.url = fileReader.result as string;
+        // })
+      }
+      filesList.value.push(fileObj);
+      if(props.autoUpload) {
+        postFile(fileObj)
+      }
+    }
+    const beforeUploadCheck = (files: null | FileList) => {
       if (files) {
         const uploadedFile = files[0];
         if(props.beforeUpload) {
@@ -133,31 +169,94 @@ export default defineComponent({
           // result 是 Promise
           if(result && result instanceof Promise) {
             result.then((processedFile) => {
-              postFile(processedFile)
+              if(processedFile instanceof File) {
+                addFileToList(processedFile)
+              }else {
+                throw new Error('beforeUpload Promise should return File object')
+              }
             }).catch((e) => {
               console.error(e);
             })
           } else if(result === true) {
-            postFile(uploadedFile)
+            addFileToList(uploadedFile)
           }
         }else {
-          postFile(uploadedFile)
+          addFileToList(uploadedFile)
         }
       }
+    }
+    // 循环fileList，上传没有上传的图片
+    const uploadFiles = () => {
+      filesList.value.filter(file => file.status === 'ready').forEach(readyFile => postFile(readyFile) )
+    }
+    // 添加事件
+    let events: {[key: string]: (e:any) => void} = {
+      'click': triggerUpload
+    }
+    const handleFileChange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      beforeUploadCheck(target.files)
     };
+    const handleDrag = (e:DragEvent, over: boolean) => {
+      e.preventDefault()
+      isDragOver.value = over;
+    }
+
+    const handleDrop = (e:DragEvent ) => {
+      e.preventDefault()
+      isDragOver.value = false;
+      if(e.dataTransfer) 
+      {
+        beforeUploadCheck(e.dataTransfer.files)
+      }
+    }
+    if(props.drag) {
+      events = {
+        ...events,
+        'dragover': (e: DragEvent) => { handleDrag(e, true)},
+        'dragleave': (e: DragEvent) => { handleDrag(e, false)},
+        'drop': handleDrop
+      }
+    }
     return {
       fileInput,
       triggerUpload,
       handleFileChange,
-      uploadedFiles,
+      filesList,
       isUploading,
       removeFile,
-      lastFileData
+      lastFileData,
+      isDragOver,
+      handleDrag,
+      handleDrop,
+      events,
+      uploadFiles
     };
   },
 });
 </script>
 <style lang="scss" scoped>
+.file-upload .upload-area {
+  background: #efefef;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 20px;
+  width: 360px;
+  height: 180px;
+  text-align: center;
+  &:hover {
+    border: 1px solid #1890ff;
+  }
+  &.is-dragover {
+    border: 2px solid #1890ff;
+    background: rgba(#1890ff,.2)
+  } 
+  img { 
+    width:100%;
+    height:100%;
+  }
+}
 .upload-list {
   margin: 0;
   padding: 0;
