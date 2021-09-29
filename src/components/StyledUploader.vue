@@ -1,77 +1,111 @@
 <template>
+  <!-- action="http://81.70.233.205:8081/api/utils/upload-img" -->
+  <!-- action="http://127.0.0.1:5000/upload/img" -->
+  <!-- action="http://127.0.0.1:3000/api/utils/upload-img/single" -->
   <uploader
+    action="http://81.70.233.205:8081/api/utils/upload-img/single"
     class="styled-uploader"
-    action="http://127.0.0.1:5000/upload/img" 
     :showUploadList="false"
     :beforeUpload="commonUploadCheck"
     @success="(data) => {handleUploadSuccess(data.resp, data.file.raw)}"
   >
     <div class="uploader-container">
-      <FileImageOutlined />
-      <h4>上传图片</h4>
+      <a-button
+        :type="type"
+        :shape="shape"
+        :style="{width: fixedWidth}"
+      >
+        <template #icon>
+          <component
+            :is="icon"
+          />
+        </template>
+        {{ titles[0] }}
+      </a-button>
     </div>
     <template #loading>
       <div class="uploader-container">
-        <LoadingOutlined spin/>
-        <h4>上传中</h4>
+        <a-button
+          :type="type"
+          :shape="shape"
+          :style="{width: fixedWidth}"
+        >
+          <template #icon>
+            <LoadingOutlined spin/>
+          </template>
+          {{ titles[1] }}
+        </a-button>
       </div>
     </template>
     <template #uploaded>
       <div class="uploader-container">
-        <FileImageOutlined/>
-        <h4>上传图片</h4>
+        <a-button
+          :type="type"
+          :shape="shape"
+          :style="{width: fixedWidth}"
+        >
+          <template #icon>
+            <component
+              :is="icon"
+            />
+          </template>
+          {{ titles[2] }}
+        </a-button>
       </div>
     </template>
   </uploader>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { FileImageOutlined, LoadingOutlined } from '@ant-design/icons-vue'
-import { commonUploadCheck } from '@/helper'
-import Uploader from './Uploader.vue'
+import { defineComponent, PropType, computed } from 'vue';
+import { FileImageOutlined, LoadingOutlined, UploadOutlined } from '@ant-design/icons-vue';
+import { commonUploadCheck } from '../helper';
+import Uploader from './Uploader.vue';
+
+type ButtonType = 'primary' | 'default' | 'dashed' | 'danger' | 'link';
+type Shape = 'circle' | 'round' | 'default'
+type Titles = string[];
+type Icon = 'FileImageOutlined' | 'UploadOutlined';
 export default defineComponent({
+  props: {
+    type: {
+      type: String as PropType<ButtonType>,
+      default: 'primary'
+    },
+    shape: {
+      type: String as PropType<Shape>,
+      default: 'default'
+    },
+    titles: {
+      type: Array as PropType<Titles>,
+      default() {
+        return ['上传图片', '上传中...', '上传图片'];
+      }
+    },
+    fixedWidth: {
+      type: [String, Number],
+      default: '110px'
+    },
+    icon: {
+      type: String as PropType<Icon>,
+      default: 'FileImageOutlined'
+    }
+  },
   components: {
     Uploader,
     FileImageOutlined,
     LoadingOutlined,
+    UploadOutlined
   },
   emits: ['success'],
-  setup(props, { emit }) {
+  setup(props, {emit}) {
     const handleUploadSuccess = (resp: any, file: File) => {
-      console.log(resp);
-      
-      emit('success', { resp, file })
-    }
+      emit('success', {resp, file});
+    };
     return {
       commonUploadCheck,
       handleUploadSuccess
-    }
+    };
   }
-})
+});
 </script>
-
-<style lang="scss">
-.styled-uploader {
-  .uploader-container {
-    width: 100px;
-    padding: 10px;
-    color: #ffffff;
-    background: #1890ff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-  }
-  .uploader-container:hover {
-    background: #40a9ff;
-  }
-  .uploader-container h4 {
-    color: #ffffff;
-    margin-bottom: 0;
-    margin-left: 10px;
-  }
-} 
-</style>

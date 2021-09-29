@@ -58,6 +58,15 @@ export const testComponents: ComponentData[] = [
       fontFamily: "",
     },
   },
+  {
+    id: uuidv4(),
+    name: "l-image",
+    props: {
+      src:
+        "http://lego-server.oss-cn-beijing.aliyuncs.com/upload-files/xiong-178972.jpg",
+      width: "373px",
+    },
+  },
 ];
 
 const editor: Module<EditorProps, GlobalDataProps> = {

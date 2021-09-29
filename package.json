@@ -12,6 +12,8 @@
     "ant-design-vue": "^2.2.2",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "cropperjs": "^1.5.12",
+    "lego-component-ynzy": "^1.0.13",
     "lodash-es": "^4.17.21",
     "rgb-hex": "^4.0.0",
     "uuid": "^8.3.2",

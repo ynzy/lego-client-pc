@@ -6,7 +6,7 @@
       :key="key"
       class="prop-item"
     >
-      <span class="label">{{value?.text}}</span>
+      <span v-if="value?.text" class="label">{{value?.text}}</span>
       <div class="prop-component">
         <!-- 父组件 -->
         <component 
@@ -38,7 +38,9 @@ import { reduce } from "lodash";
 import { TextComponentProps } from "@/defaultProps";
 import { mapPropsToForms, PropsToForms } from "@/propsMap";
 import RenderVnode from '@/components/RenderVnode';
-import ColorPicker from '@/components/ColorPicker.vue'; 
+import ColorPicker from '@/components/ColorPicker.vue';
+import ImageProcesser from "@/components/ImageProcesser.vue";
+
 interface FormProps {
   component: string;
   subComponent?: string;
@@ -54,7 +56,8 @@ export default defineComponent({
   name: "props-table",
   components: {
     RenderVnode,
-    ColorPicker
+    ColorPicker,
+    ImageProcesser
   },
   props: {
     props: {

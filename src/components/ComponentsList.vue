@@ -1,4 +1,4 @@
-<!--  -->
+<!-- 左侧组件列表 -->
 <template>
   <div class="create-component-list">
     <div
@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { message } from 'ant-design-vue'
 import LText from "@/components/LText.vue";
 import StyledUploader from "@/components/StyledUploader.vue";
-import { imageDefaultProps, TextComponentProps } from "@/defaultProps";
+import { imageDefaultProps, TextComponentProps } from "lego-component-ynzy";
 import { ComponentData } from "@/store/editor";
 import { UploadResp } from '@/extraType'
 import { getImageDimensions } from '@/helper'
