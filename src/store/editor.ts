@@ -18,6 +18,12 @@ export interface ComponentData {
   id: string;
   // 业务组件库名称 l-text，l-image 等等
   name: string;
+  // 图层是否隐藏
+  isHidden?: boolean;
+  // 图层是否锁定
+  isLocked?: boolean;
+  // 图层名称
+  layerName?: string
 }
 
 export const testComponents: ComponentData[] = [
@@ -89,12 +95,24 @@ const editor: Module<EditorProps, GlobalDataProps> = {
     setActive(state, currentId: string) {
       state.currentElement = currentId;
     },
-    updateComponent(state, { key, value }) {
+    /**
+     *
+     * @param id id 不存在的时候，使用state.currentElement
+     * @param isRoot 是否修改根属性
+     */
+    updateComponent(state, { key, value, id, isRoot }) {
       const updatedComponent = state.components.find(
-        (component) => component.id === state.currentElement
+        // id 不存在的时候，使用state.currentElement
+        (component) => component.id === (id || state.currentElement)
       );
       if (updatedComponent) {
-        updatedComponent.props[key as keyof TextComponentProps] = value;
+        if(isRoot){
+          // 不能将类型“any”分配给类型“never” 因为属性上有一个boolean,报了这个错，目前是个ts，bug
+          // https://github.com/microsoft/TypeScript/issues/31663
+          (updatedComponent as any)[key] = value
+        }else {
+          updatedComponent.props[key as keyof TextComponentProps] = value;
+        }
       }
     },
   },

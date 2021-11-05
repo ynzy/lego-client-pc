@@ -11,11 +11,11 @@
         <a-layout-content class="preview-container">
           <p>画布区域</p>
           <div class="preview-list" id="canvas-area">
-            <EditWrapper 
-              v-for="component in components" 
-              :key="component.id" 
-              :id="component.id" 
-              @setActive="setActive"  
+            <EditWrapper
+              v-for="component in components"
+              :key="component.id"
+              :id="component.id"
+              @setActive="setActive"
               :active="component.id === currentElement?.id"
             >
               <component
@@ -31,22 +31,46 @@
         style="background: #fff"
         class="settings-panel"
       >
-        组件属性
-        <PropsTable
-          v-if="currentElement?.props"
-          :props="currentElement.props"
-          @change="handleChange"
-        ></PropsTable>
-        <pre>
-          {{currentElement?.props}}
-        </pre>
+        <a-tabs type="card" v-model:activeKey="activePanel" >
+          <a-tab-pane key="component" tab="属性设置" class="no-top-radius">
+            <div v-if="currentElement">
+              <PropsTable
+                v-if="!currentElement.isLocked"
+                :props="currentElement.props"
+                @change="handleChange"
+              ></PropsTable>
+              <div v-else>
+                <a-empty>
+                  <template #description>
+                    <p>该元素被锁定，无法编辑</p>
+                  </template>
+                </a-empty>
+              </div>
+            </div>
+            <pre>
+              {{currentElement?.props}}
+            </pre>
+          </a-tab-pane>
+          <a-tab-pane key="layer" tab="图层设置" >
+            <LayerList
+              :list="components"
+              :selectedId="currentElement && currentElement.id"
+              @change="handleChange"
+              @select="setActive"
+            >
+            </LayerList>
+          </a-tab-pane>
+          <a-tab-pane key="3" tab="Tab 3">
+            Content of Tab Pane 3
+          </a-tab-pane>
+        </a-tabs>
       </a-layout-sider>
     </a-layout>
   </div>
 </template>
 <script lang="ts">
 import { GlobalDataProps } from "@/store";
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent,ref } from "vue";
 import { useStore } from "vuex";
 import { ComponentData } from "@/store/editor";
 import LText from "@/components/LText.vue";
@@ -54,9 +78,11 @@ import LImage from "@/components/LImage.vue";
 import EditWrapper from "@/components/EditWrapper.vue";
 import ComponentsList from "@/components/ComponentsList.vue";
 import PropsTable from "@/components/PropsTable.vue";
+import LayerList from "@/components/LayerList.vue";
 // import PropsTable from "@/components/PropsTable.tsx";
 
 import { defaultTextTemplates } from "@/defaultTemplates";
+export type TabType = 'component' | 'layer' | 'page';
 export default defineComponent({
   name: "",
   components: {
@@ -64,11 +90,13 @@ export default defineComponent({
     LImage,
     ComponentsList,
     EditWrapper,
-    PropsTable
+    PropsTable,
+    LayerList
   },
   props: {},
   setup() {
     const store = useStore<GlobalDataProps>();
+    const activePanel = ref<TabType>('component')
     const components = computed(() => store.state.editor.components);
     const currentElement = computed<ComponentData | null>(() => store.getters.getCurrentElement)
     const addItem = (component: ComponentData) =>{
@@ -83,7 +111,7 @@ export default defineComponent({
     const handleChange = (e:any) =>{
       console.log('event', e);
       store.commit('updateComponent', e)
-      
+
     }
     return {
       components,
@@ -92,7 +120,8 @@ export default defineComponent({
       handleDeleteComponent,
       setActive,
       currentElement,
-      handleChange
+      handleChange,
+      activePanel
     };
   },
 });
