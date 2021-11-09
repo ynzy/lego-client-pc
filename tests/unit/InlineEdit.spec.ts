@@ -49,9 +49,17 @@ describe("InlineEdit component", () => {
     expect(wrapper.get('h2').text()).toBe('testnew')
   })
 
-  /* it('click outside should render to default layout with new value',async ()=>{
-
-  }) */
+  it('click outside should render to default layout with new value', async () => {
+    await wrapper.trigger('click')
+    await wrapper.get('input').setValue('testupdated')
+    const event = new MouseEvent('click')
+    document.dispatchEvent(event)
+    await nextTick()
+    expect(wrapper.find('h2').exists()).toBeTruthy()
+    expect(wrapper.get('h2').text()).toBe('testupdated')
+    const events: any = wrapper.emitted('change')
+    expect(events[1]).toEqual(['testupdated'])
+  })
 });
 
 

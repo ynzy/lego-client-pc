@@ -8,7 +8,7 @@
       @click="handleClick(item.id)"
     >
       <a-tooltip :title="item.isHidden ? '显示' : '隐藏'">
-        <a-button shape="circle">
+        <a-button shape="circle" @click.stop="handleChange(item.id, 'isHidden', !item.isHidden)">
           <template v-slot:icon v-if="item.isHidden">
             <EyeOutlined />
           </template>
@@ -27,7 +27,7 @@
           </template>
         </a-button>
       </a-tooltip>
-      <span>{{ item.layerName }}</span>
+      <inline-edit class="edit-area" :value="item.layerName" @change="(value) => {handleChange(item.id, 'layerName', value)}"></inline-edit>
     </li>
   </ul>
 </template>
@@ -36,10 +36,12 @@
 import { EyeOutlined, EyeInvisibleOutlined, UnlockOutlined, LockOutlined } from "@ant-design/icons-vue";
 import { PropType } from 'vue';
 import { ComponentData } from '@/store/editor';
+import InlineEdit from '@/components/InlineEdit.vue'
+
 export default {
     name: '',
     components: {
-        EyeOutlined, EyeInvisibleOutlined, UnlockOutlined, LockOutlined
+        EyeOutlined, EyeInvisibleOutlined, UnlockOutlined, LockOutlined,InlineEdit
     },
     props: {
         list: {

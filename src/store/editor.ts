@@ -27,52 +27,10 @@ export interface ComponentData {
 }
 
 export const testComponents: ComponentData[] = [
-  {
-    id: uuidv4(),
-    name: "l-text",
-    props: {
-      text: "hello",
-      fontSize: "20px",
-      color: "#000000",
-      lineHeight: "1",
-      textAlign: "left",
-      fontFamily: "",
-    },
-  },
-  {
-    id: uuidv4(),
-    name: "l-text",
-    props: {
-      text: "hello2",
-      fontSize: "10px",
-      fontWeight: "bold",
-      lineHeight: "2",
-      textAlign: "left",
-      fontFamily: "",
-    },
-  },
-  {
-    id: uuidv4(),
-    name: "l-text",
-    props: {
-      text: "hello3",
-      fontSize: "15px",
-      actionType: "url",
-      url: "https://www.baidu.com",
-      lineHeight: "3",
-      textAlign: "left",
-      fontFamily: "",
-    },
-  },
-  {
-    id: uuidv4(),
-    name: "l-image",
-    props: {
-      src:
-        "http://lego-server.oss-cn-beijing.aliyuncs.com/upload-files/xiong-178972.jpg",
-      width: "373px",
-    },
-  },
+  { id: uuidv4(), name: "l-text", layerName: '图层1', props: { text: "hello", fontSize: "20px", color: "#000000", lineHeight: "1", textAlign: "left", fontFamily: "", }, },
+  { id: uuidv4(), name: "l-text", layerName: '图层2', props: { text: "hello2", fontSize: "10px", fontWeight: "bold", lineHeight: "2", textAlign: "left", fontFamily: "", }, },
+  { id: uuidv4(), name: "l-text", layerName: '图层3', props: { text: "hello3", fontSize: "15px", actionType: "url", url: "https://www.baidu.com", lineHeight: "3", textAlign: "left", fontFamily: "", }, },
+  { id: uuidv4(), name: "l-image", layerName: '图层4', props: { src: "http://lego-server.oss-cn-beijing.aliyuncs.com/upload-files/xiong-178972.jpg", width: "373px", }, },
 ];
 
 const editor: Module<EditorProps, GlobalDataProps> = {
@@ -106,11 +64,11 @@ const editor: Module<EditorProps, GlobalDataProps> = {
         (component) => component.id === (id || state.currentElement)
       );
       if (updatedComponent) {
-        if(isRoot){
+        if (isRoot) {
           // 不能将类型“any”分配给类型“never” 因为属性上有一个boolean,报了这个错，目前是个ts，bug
           // https://github.com/microsoft/TypeScript/issues/31663
           (updatedComponent as any)[key] = value
-        }else {
+        } else {
           updatedComponent.props[key as keyof TextComponentProps] = value;
         }
       }
