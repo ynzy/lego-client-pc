@@ -1,11 +1,19 @@
 <!-- 图层列表 -->
 <template>
-  <ul :list="list" class="ant-list-items ant-list-bordered">
+  <ul
+    :list="list"
+    class="ant-list-items ant-list-bordered"
+    @drop="onDrop"
+    @dragover="onDragOver"
+  >
     <li
       class="ant-list-item"
-      v-for="item in list" :key="item.id"
-      :class="{active: item.id === selectedId}"
+      v-for="(item,index) in list" :key="item.id"
+      :class="{active: item.id === selectedId, ghost: dragData.currentDragging === item.id}"
       @click="handleClick(item.id)"
+      :data-index="index"
+      draggable="true"
+      @dragstart="onDragStart($event,item.id,index)"
     >
       <a-tooltip :title="item.isHidden ? '显示' : '隐藏'">
         <a-button shape="circle" @click.stop="handleChange(item.id, 'isHidden', !item.isHidden)">
@@ -33,10 +41,12 @@
 </template>
 
 <script lang='ts'>
+import { PropType, reactive } from 'vue';
+import {arrayMoveMutable} from 'array-move'
 import { EyeOutlined, EyeInvisibleOutlined, UnlockOutlined, LockOutlined } from "@ant-design/icons-vue";
-import { PropType } from 'vue';
 import { ComponentData } from '@/store/editor';
 import InlineEdit from '@/components/InlineEdit.vue'
+import { getParentElement } from '@/helper';
 
 export default {
     name: '',
@@ -55,8 +65,28 @@ export default {
     },
     emits: ['select', 'change'],
     setup(props:any, ctx:any) {
+      const dragData = reactive({
+        currentDragging: '',
+        currentIndex: -1
+      })
       const handleClick = (id:string) => {
         ctx.emit('select',id)
+      }
+      const onDragStart = (e:DragEvent,id: string, index:number) => {
+        dragData.currentDragging = id
+        dragData.currentIndex = index
+      }
+      const onDrop = (e:DragEvent) =>{
+        const currentEle = getParentElement(e.target as HTMLElement, 'ant-list-item')
+        if(currentEle && currentEle.dataset.index) {
+          const moveIndex = parseInt(currentEle.dataset.index)
+          console.log(moveIndex);
+          arrayMoveMutable(props.list, dragData.currentIndex, moveIndex)
+        }
+        dragData.currentDragging = ''
+      }
+      const onDragOver = (e:DragEvent) =>{
+        e.preventDefault()
       }
       const handleChange = (id: string,key: string,value: boolean) => {
         const data = {
@@ -70,7 +100,11 @@ export default {
 
       return {
         handleChange,
-        handleClick
+        handleClick,
+        onDragStart,
+        dragData,
+        onDrop,
+        onDragOver
       }
     }
 }
@@ -83,6 +117,9 @@ export default {
   justify-content:normal;
   border: 1px solid #fff;
   border-bottom-color: #f0f0f0;
+  &.ghost {
+    opacity: 0.5;
+  }
 }
 .ant-list-item.active {
   border: 1px solid #1890ff;

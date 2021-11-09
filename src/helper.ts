@@ -5,7 +5,7 @@ interface CheckCondition {
   size?: number;
 }
 type ErrorType = 'size' | 'format' | null
-export function beforeUploadCheck (file: File, condition: CheckCondition) {
+export function beforeUploadCheck(file: File, condition: CheckCondition) {
   const { format, size } = condition
   const isValidFormat = format ? format.includes(file.type) : true
   const isValidSize = size ? (file.size / 1024 / 1024 < size) : true
@@ -46,4 +46,22 @@ export const getImageDimensions = (url: string | File) => {
       reject(new Error('There was some problem with the image.'))
     })
   })
+}
+
+/**
+ * 获取指定的父元素
+ * @param element 当前元素
+ * @param className 指定的父元素类名
+ * @returns
+ */
+export const getParentElement = (element: HTMLElement, className: string) => {
+  while (element) {
+    // 如果元素包含这个class，直接返回，否则返回父节点
+    if (element.classList && element.classList.contains(className)) {
+      return element
+    } else {
+      element = element.parentNode as HTMLElement
+    }
+  }
+  return null
 }
