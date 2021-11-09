@@ -1,5 +1,9 @@
 <template>
-  <div class="edit-wrapper" @click="onItemClick(id)" :class="{ active: active }">
+  <div class="edit-wrapper"
+       :data-component-id="id"
+       @click="onItemClick(id)"
+       :class="{ active: active,hidden: hidden }"
+  >
     <slot></slot>
   </div>
 </template>
@@ -15,6 +19,13 @@ export default defineComponent({
     active: {
       type: Boolean,
       default: false
+    },
+    hidden: {
+      type: Boolean,
+      default: false
+    },
+    props: {
+      type: Object
     }
   },
   emits: ['set-active'],
@@ -38,6 +49,9 @@ export default defineComponent({
 }
 .edit-wrapper:hover {
   border: 1px dashed #ccc;
+}
+.edit-wrapper.hidden {
+  display: none;
 }
 .edit-wrapper.active {
   border: 1px solid #1890ff;

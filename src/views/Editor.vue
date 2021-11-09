@@ -15,8 +15,9 @@
               v-for="component in components"
               :key="component.id"
               :id="component.id"
-              @setActive="setActive"
+              :hidden="component.isHidden"
               :active="component.id === currentElement?.id"
+              @setActive="setActive"
             >
               <component
                 :is="component.name"
