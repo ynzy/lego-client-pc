@@ -14,6 +14,7 @@
       :data-index="index"
       draggable="true"
       @dragstart="onDragStart($event,item.id,index)"
+      @dragenter="onDragEnter($event, index)"
     >
       <a-tooltip :title="item.isHidden ? '显示' : '隐藏'">
         <a-button shape="circle" @click.stop="handleChange(item.id, 'isHidden', !item.isHidden)">
@@ -42,7 +43,7 @@
 
 <script lang='ts'>
 import { PropType, reactive } from 'vue';
-import {arrayMoveMutable} from 'array-move'
+import { arrayMoveMutable } from 'array-move'
 import { EyeOutlined, EyeInvisibleOutlined, UnlockOutlined, LockOutlined } from "@ant-design/icons-vue";
 import { ComponentData } from '@/store/editor';
 import InlineEdit from '@/components/InlineEdit.vue'
@@ -63,26 +64,32 @@ export default {
           required: true,
         }
     },
-    emits: ['select', 'change'],
+    emits: ['select', 'change','drop'],
     setup(props:any, ctx:any) {
       const dragData = reactive({
         currentDragging: '',
         currentIndex: -1
       })
+      let start = -1
+      let end = -1
       const handleClick = (id:string) => {
         ctx.emit('select',id)
       }
       const onDragStart = (e:DragEvent,id: string, index:number) => {
         dragData.currentDragging = id
         dragData.currentIndex = index
+        start = index
+      }
+      const onDragEnter = (e: DragEvent, index:number) => {
+        if(index !== dragData.currentIndex) {
+          console.log('enter', index, dragData.currentIndex);
+          arrayMoveMutable(props.list, dragData.currentIndex, index) // 修改原数组
+          dragData.currentIndex = index
+          end = index
+        }
       }
       const onDrop = (e:DragEvent) =>{
-        const currentEle = getParentElement(e.target as HTMLElement, 'ant-list-item')
-        if(currentEle && currentEle.dataset.index) {
-          const moveIndex = parseInt(currentEle.dataset.index)
-          console.log(moveIndex);
-          arrayMoveMutable(props.list, dragData.currentIndex, moveIndex)
-        }
+        ctx.emit('drop',{start,end})
         dragData.currentDragging = ''
       }
       const onDragOver = (e:DragEvent) =>{
@@ -104,7 +111,8 @@ export default {
         onDragStart,
         dragData,
         onDrop,
-        onDragOver
+        onDragOver,
+        onDragEnter
       }
     }
 }
